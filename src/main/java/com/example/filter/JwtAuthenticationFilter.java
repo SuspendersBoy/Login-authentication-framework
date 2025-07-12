@@ -1,10 +1,9 @@
 package com.example.filter;
 
-import com.alibaba.fastjson2.JSON;
+
 import com.example.entity.JwtUserDetails;
 import com.example.utils.JwtUtils;
 import com.nimbusds.jose.shaded.json.JSONArray;
-import com.nimbusds.jose.shaded.json.JSONObject;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -36,12 +34,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.replace("Bearer ", "");
             //判断jwt 是否合法
-            if (!jwtUtils.verifyToken(token)) throw new BadCredentialsException("无效的 JWT 令牌");
+            if (!jwtUtils.verifyToken(token)) {
+                throw new BadCredentialsException("未认证，请登录");
+            }
             //解析jwt 获取usr
             Map<String, Object> user = jwtUtils.parseToken(token);
-
-            //权限存储的是json,所以需要转换
-            JSONArray roleNamesArray = (JSONArray) user.get("rolenames");  // 权限（角色）
+;
+            //权限存储的是json,所以需要转换4[
+            JSONArray roleNamesArray = (JSONArray) user.get("rolenames");  // 权限（角色）40140
             List<GrantedAuthority> authorities = new ArrayList<>();
             for (Object roleObj : roleNamesArray) {
                 String role = roleObj.toString(); // 取出 JSONArray 中的字符串（如 "ADMIN"）
